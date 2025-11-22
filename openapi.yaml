@@ -1,0 +1,537 @@
+openapi: 3.0.1
+info:
+  title: OSV Client
+  version: "1.0"
+  description: Unofficial API client generated from the osv.dev API specification.
+  license:
+    name: MIT
+    url: https://github.com/primelib/osv-client/blob/main/LICENSE
+servers:
+  - url: //api.osv.dev/
+paths:
+  /v1/query:
+    post:
+      tags:
+        - OSV
+      summary: |-
+        Query vulnerabilities for a particular project at a given commit or
+        version.
+      operationId: postQueryV1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1Query'
+        required: true
+      responses:
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+        "200":
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1VulnerabilityList'
+      x-codegen-request-body-name: body
+  /v1/querybatch:
+    post:
+      tags:
+        - OSV
+      summary: |-
+        Query vulnerabilities (batched) for given package versions and commits.
+        This currently allows a maximum of 1000 package versions to be included in a single query.
+      operationId: postQuerybatchV1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1BatchQuery'
+        required: true
+      responses:
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+        "200":
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1BatchVulnerabilityList'
+      x-codegen-request-body-name: body
+  /v1/vulns/{id}:
+    get:
+      tags:
+        - OSV
+      summary: Return a `Vulnerability` object for a given OSV ID.
+      operationId: getVulnByIdV1
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+        "200":
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/osvVulnerability'
+  /v1experimental/determineversion:
+    post:
+      tags:
+        - OSV
+      summary: Determine the version of the provided hash values.
+      operationId: postV1experimentalDetermineversionV1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1VersionQuery'
+        required: true
+      responses:
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+        "200":
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1VersionMatchList'
+      x-codegen-request-body-name: body
+components:
+  schemas:
+    osvAffected:
+      type: object
+      properties:
+        package:
+          $ref: '#/components/schemas/osvPackage'
+        ranges:
+          type: array
+          description: Required. Range information.
+          items:
+            $ref: '#/components/schemas/osvRange'
+        versions:
+          type: array
+          description: Optional. List of affected versions.
+          items:
+            type: string
+        ecosystemSpecific:
+          $ref: '#/components/schemas/osvAffectedEcosystemSpecific'
+        databaseSpecific:
+          $ref: '#/components/schemas/osvAffectedDatabaseSpecific'
+        severity:
+          type: array
+          description: Optional. Severity of the vulnerability for this package.
+          items:
+            $ref: '#/components/schemas/osvSeverity'
+      description: Affected versions and commits.
+      title: osvAffected
+    osvCredit:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name to give credit to.
+        contact:
+          type: array
+          description: Contact methods (URLs).
+          items:
+            type: string
+        type:
+          $ref: '#/components/schemas/osvCreditType'
+      title: osvCredit
+    osvCreditType:
+      type: string
+      default: UNSPECIFIED
+      enum:
+        - UNSPECIFIED
+        - OTHER
+        - FINDER
+        - REPORTER
+        - ANALYST
+        - COORDINATOR
+        - REMEDIATION_DEVELOPER
+        - REMEDIATION_REVIEWER
+        - REMEDIATION_VERIFIER
+        - TOOL
+        - SPONSOR
+      title: osvCreditType
+    osvEvent:
+      type: object
+      properties:
+        introduced:
+          type: string
+          description: |-
+            The earliest version/commit where this vulnerability
+            was introduced in.
+        fixed:
+          type: string
+          description: The version/commit that this vulnerability was fixed in.
+        limit:
+          type: string
+          description: The limit to apply to the range.
+        lastAffected:
+          type: string
+          description: The last affected version.
+      description: Version events.
+      title: osvEvent
+    osvPackage:
+      type: object
+      properties:
+        name:
+          type: string
+          description: |-
+            Required. Name of the package. Should match the name used in the package
+            ecosystem (e.g. the npm package name). For C/C++ projects integrated in
+            OSS-Fuzz, this is the name used for the integration.
+        ecosystem:
+          type: string
+          description: "Required. The ecosystem for this package. \nFor the complete list of valid ecosystem names, see\n<https://ossf.github.io/osv-schema/#affectedpackage-field>."
+        purl:
+          type: string
+          description: Optional. The package URL for this package.
+      description: Package information and version.
+      title: osvPackage
+    osvRange:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/osvRangeType'
+        repo:
+          type: string
+          description: |-
+            Required if type is GIT. The publicly accessible URL of the repo that can
+            be directly passed to clone commands.
+        events:
+          type: array
+          description: Required. Version event information.
+          items:
+            $ref: '#/components/schemas/osvEvent'
+      description: Affected ranges.
+      title: osvRange
+    osvRangeType:
+      type: string
+      description: Type of the version information.
+      default: UNSPECIFIED
+      enum:
+        - UNSPECIFIED
+        - GIT
+        - SEMVER
+        - ECOSYSTEM
+      title: osvRangeType
+    osvReference:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/osvReferenceType'
+        url:
+          type: string
+          description: Required. The URL.
+      description: Reference URL.
+      title: osvReference
+    osvReferenceType:
+      type: string
+      default: NONE
+      enum:
+        - NONE
+        - WEB
+        - ADVISORY
+        - REPORT
+        - FIX
+        - PACKAGE
+        - ARTICLE
+        - EVIDENCE
+      title: osvReferenceType
+    osvSeverity:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/osvSeverityType'
+        score:
+          type: string
+          description: The quantitative score.
+      title: osvSeverity
+    osvSeverityType:
+      type: string
+      description: Type of the severity.
+      default: UNSPECIFIED
+      enum:
+        - UNSPECIFIED
+        - CVSS_V3
+        - CVSS_V2
+      title: osvSeverityType
+    osvVulnerability:
+      type: object
+      properties:
+        schemaVersion:
+          type: string
+          description: The OSV schema version.
+        id:
+          type: string
+          description: |-
+            The `id` field is a unique identifier for the vulnerability entry. It is a
+            string of the format `<DB>-<ENTRYID>`, where `DB` names the database and
+            `ENTRYID` is in the format used by the database. For example:
+            “OSV-2020-111”, “CVE-2021-3114”, or “GHSA-vp9c-fpxx-744v”.
+        published:
+          type: string
+          description: The RFC3339 timestamp indicating when this entry was published.
+          format: date-time
+        modified:
+          type: string
+          description: The RFC3339 timestamp indicating when this entry was last modified.
+          format: date-time
+        withdrawn:
+          type: string
+          description: |-
+            Optional. The RFC3339 timestamp indicating when this entry is considered to
+            be withdrawn.
+          format: date-time
+        aliases:
+          type: array
+          description: Optional. IDs for the same vulnerability in other databases.
+          items:
+            type: string
+        related:
+          type: array
+          description: |-
+            Optional. List of IDs of closely related vulnerabilities, such as the same
+            problem in alternate ecosystems.
+          items:
+            type: string
+        summary:
+          type: string
+          description: |-
+            Required. One line human readable summary for the vulnerability. It is
+            recommended to keep this under 120 characters.
+        details:
+          type: string
+          description: Required. Any additional human readable details for the vulnerability.
+        affected:
+          type: array
+          description: Required. Affected commit ranges and versions.
+          items:
+            $ref: '#/components/schemas/osvAffected'
+        references:
+          type: array
+          description: |-
+            Optional. URLs to more information/advisories (including the
+            scheme e.g "https://").
+          items:
+            $ref: '#/components/schemas/osvReference'
+        databaseSpecific:
+          $ref: '#/components/schemas/osvVulnerabilityDatabaseSpecific'
+        severity:
+          type: array
+          description: Optional. Severity of the vulnerability.
+          items:
+            $ref: '#/components/schemas/osvSeverity'
+        credits:
+          type: array
+          description: Optional. Credits for the vulnerability.
+          items:
+            $ref: '#/components/schemas/osvCredit'
+      description: |-
+        A vulnerability entry.
+        The protobuf representation is *NOT* stable and only used for implementing
+        the JSON based API.
+      title: osvVulnerability
+    protobufAny:
+      type: object
+      properties:
+        typeUrl:
+          type: string
+        value:
+          pattern: "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
+          type: string
+          format: byte
+      title: protobufAny
+    protobufNullValue:
+      type: string
+      description: |-
+        `NullValue` is a singleton enumeration to represent the null value for the
+        `Value` type union.
+
+         The JSON representation for `NullValue` is JSON `null`.
+
+         - NULL_VALUE: Null value.
+      default: NULL_VALUE
+      enum:
+        - NULL_VALUE
+      title: protobufNullValue
+    rpcStatus:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/protobufAny'
+      title: rpcStatus
+    v1BatchQuery:
+      type: object
+      properties:
+        queries:
+          type: array
+          description: The queries that form this batch query.
+          items:
+            $ref: '#/components/schemas/v1Query'
+      description: Batch query format.
+      title: v1BatchQuery
+    v1BatchVulnerabilityList:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1VulnerabilityList'
+      description: Batched lists of Vulnerability entries.
+      title: v1BatchVulnerabilityList
+    v1FileHash:
+      type: object
+      properties:
+        filePath:
+          type: string
+          description: "The file path inside the repository, relative to the repository root."
+        hashType:
+          type: string
+        hash:
+          pattern: "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
+          type: string
+          format: byte
+      description: |-
+        Information about the files in the repository
+        to identify the version.
+      title: v1FileHash
+    v1Query:
+      type: object
+      properties:
+        commit:
+          type: string
+          description: "The commit hash to query for. If specified, `version` should not be set."
+        version:
+          type: string
+          description: |-
+            The version string to query for. A fuzzy match is done against upstream
+            versions. If specified, `commit` should not be set.
+        package:
+          $ref: '#/components/schemas/osvPackage'
+        pageToken:
+          type: string
+      description: Query format.
+      title: v1Query
+    v1VersionMatch:
+      type: object
+      properties:
+        score:
+          type: number
+          description: "Score in the interval (0.0, 1.0] with 1.0 being a perfect match."
+          format: double
+        repoInfo:
+          $ref: '#/components/schemas/v1VersionRepositoryInformation'
+        osvIdentifier:
+          $ref: '#/components/schemas/osvPackage'
+        cpe23:
+          type: string
+          description: CPE 2.3.
+      description: Match information for the provided VersionQuery.
+      title: v1VersionMatch
+    v1VersionMatchList:
+      type: object
+      properties:
+        matches:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1VersionMatch'
+      description: Result of DetmineVersion.
+      title: v1VersionMatchList
+    v1VersionQuery:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the dependency. Can be empty.
+        fileHashes:
+          type: array
+          items:
+            $ref: '#/components/schemas/v1FileHash'
+      description: The version query.
+      title: v1VersionQuery
+    v1VersionRepositoryInformation:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/v1VersionRepositoryInformationRepoType'
+        address:
+          type: string
+          description: Source address of the repository.
+        commit:
+          pattern: "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
+          type: string
+          description: Commit hash.
+          format: byte
+        tag:
+          title: Commit tag
+          type: string
+        version:
+          title: Parsed version from commit tag
+          type: string
+      title: v1VersionRepositoryInformation
+    v1VersionRepositoryInformationRepoType:
+      type: string
+      default: UNSPECIFIED
+      enum:
+        - UNSPECIFIED
+        - GIT
+      title: v1VersionRepositoryInformationRepoType
+    v1VulnerabilityList:
+      type: object
+      properties:
+        vulns:
+          type: array
+          items:
+            $ref: '#/components/schemas/osvVulnerability'
+        nextPageToken:
+          type: string
+      description: A list of Vulnerability entries.
+      title: v1VulnerabilityList
+    osvAffectedEcosystemSpecific:
+      type: object
+      description: |-
+        Optional. JSON object holding additional information about the
+        vulnerability as defined by the ecosystem for which the record applies.
+      title: osvAffectedEcosystemSpecific
+    osvAffectedDatabaseSpecific:
+      type: object
+      description: |-
+        Optional. JSON object holding additional information about the
+        vulnerability as defined by the database for which the record applies.
+      title: osvAffectedDatabaseSpecific
+    osvVulnerabilityDatabaseSpecific:
+      type: object
+      description: |-
+        Optional. JSON object holding additional information about the
+        vulnerability as defined by the database for which the record applies.
+      title: osvVulnerabilityDatabaseSpecific

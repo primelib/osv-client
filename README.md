@@ -1,47 +1,35 @@
-# *OSV4J*
+# _OSV Client SDK_
 
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.primelib/osv4j)](https://central.sonatype.com/artifact/io.github.primelib/osv4j)
-[![javadoc](https://javadoc.io/badge2/io.github.primelib/osv4j/javadoc.svg)](https://javadoc.io/doc/io.github.primelib/osv4j)
+OSV is a distributed vulnerability database for Open Source.
 
-> A java library for the [OSV](https://osv.dev/) API.
+- [google/osv.dev](https://github.com/google/osv.dev)
 
-## Installation
+## API Specification
 
-```gradle
-implementation("io.github.primelib:osv4j:<latestVersion>")
-```
+This repository includes API specifications from the following sources:
 
-[Click to view instructions for other build tools](https://central.sonatype.com/artifact/io.github.primelib/osv4j).
+- [osv_service_v1.swagger.json](https://osv.dev/docs/osv_service_v1.swagger.json)
 
-## Usage
+## Libraries
 
-*Consumer Specification Approach*
+> **⚠️ Unofficial**
+>
+> This repository and the generated SDKs are unofficial and are not maintained, endorsed, or sponsored by OSV, or any other original API providers.
+> Use at your own risk. Consult the official API documentation and terms of service of each provider before integrating.
 
-```java
-OSVConsumerApi client = OSVFactory.create(spec -> {
-    spec.api(OSVConsumerApi.class);
-});
-
-client.getVulnById(spec -> spec.id("GHSA-jfh8-c2jp-5v3q"));
-```
-
-*Parameter Approach*
-
-```java
-OSVApi client = OSVFactory.create(spec -> {
-    spec.api(OSVApi.class);
-});
-
-client.getVulnById("GHSA-jfh8-c2jp-5v3q");
-```
-
-**_NOTE:_** The  `Parameter Approach` can break if the API changes. The `Consumer Specification Approach` is more resilient to API changes.
-
-## Links
-
-- [Documentation](https://primelib.github.io)
-- [Contribute](https://primelib.github.io/contribution/)
+- [Go](sdk/go/README.md)
+- [Java](sdk/java/README.md)
 
 ## License
 
-Released under the [MIT License](./LICENSE).
+### API Specifications License
+
+API specifications are included for development and code generation purposes only.
+
+- Copyright and ownership of each API specification remain with the respective original rights holders.
+- Inclusion of these specifications in this repository does **not** imply any affiliation, endorsement, or sponsorship by the respective companies.
+- Please consult the terms of service or license provided by each API owner before using these specifications or integrating with their APIs.
+
+### Code License
+
+The generated code in this repository (`/sdk`) is licensed under the [MIT License](./LICENSE).

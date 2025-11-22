@@ -37,15 +37,19 @@ local.properties
 
 # Gradle
 .gradletasknamecache
-.gradle/
-gradle.properties
+**/.gradle/
 !gradle/wrapper/*.jar
+gradle.properties
 
-# CI
-.dist
-.tmp
+# Modules
+/modules/
 
-# openapi generator files
-.openapi-generator/
-!.openapi-generator/FILES
-codegen-test.sh
+# Visual Studio Code
+.vscode/
+
+# Documentation
+docs/
+
+# Pipeline
+.dist/*
+.tmp/*

@@ -1,20 +1,32 @@
-release: true
-modules:
-  - spec_file: openapi.json
-    spec_format: openapi
-    spec_url: https://osv.dev/docs/osv_service_v1.swagger.json
-    spec_script: |
-      jq '.host = "api.osv.dev"' "$1" | sponge "$1" # set api host
-      jq 'walk(if type == "object" and has("operationId") then .operationId |= sub("^OSV_"; "") else . end)' "$1" | sponge "$1" # remove prefix from operationId
-    config:
-      generatorName: prime-client-java-feign
-      invokerPackage: io.github.primelib.osv4j
-      apiPackage: io.github.primelib.osv4j.api
-      modelPackage: io.github.primelib.osv4j.model
-      enablePostProcessFile: true
-      additionalProperties:
-        projectArtifactGroupId: io.github.primelib
-        projectArtifactId: osv4j
-        projectMaintainerId: PhilippHeuer
-        projectMaintainerName: Philipp Heuer
-        projectMaintainerEMail: git@philippheuer.me
+# yaml-language-server: $schema=https://raw.githubusercontent.com/primelib/primecodegen/main/configschema/primelib-v1.json
+output: sdk
+outputSubDir: true
+
+repository:
+  name: OSV Client
+  description: Unofficial Client Libraries for the osv.dev API.
+  url: https://github.com/primelib/osv-client
+  licenseName: MIT
+  licenseURL: https://github.com/primelib/osv-client/blob/main/LICENSE
+
+maintainers:
+  - id: PhilippHeuer
+    name: Philipp Heuer
+    email: git@philippheuer.de
+
+spec:
+  file: openapi.yaml
+  type: openapi3
+  sources:
+    - url: https://osv.dev/docs/osv_service_v1.swagger.json
+      type: swagger2
+  patchSets:
+    - code-generation
+  patches:
+    - id: set-endpoint
+      config:
+        url: https://api.osv.dev
+
+presets:
+  java:
+    enabled: true
