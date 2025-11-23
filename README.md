@@ -1,28 +1,31 @@
-# _OSV Client SDK_
+# *OSV Client*
+
 
 OSV is a distributed vulnerability database for Open Source.
 
-- [google/osv.dev](https://github.com/google/osv.dev)
+
+**Links**:
+- [github.com/google/osv.dev](https://github.com/google/osv.dev)
+- [OSV Documentation](https://osv.dev/docs)
+
 
 ## API Specification
 
 This repository includes API specifications from the following sources:
-
-- [osv_service_v1.swagger.json](https://osv.dev/docs/osv_service_v1.swagger.json)
+- [https://osv.dev/docs/osv_service_v1.swagger.json](https://osv.dev/docs/osv_service_v1.swagger.json)
 
 ## Libraries
-
 > **⚠️ Unofficial**
 >
-> This repository and the generated SDKs are unofficial and are not maintained, endorsed, or sponsored by OSV, or any other original API providers.
+> This repository and the generated SDKs are unofficial and are not maintained, endorsed, or sponsored by Google, or any other original API providers.
 > Use at your own risk. Consult the official API documentation and terms of service of each provider before integrating.
 
-- [Go](sdk/go/README.md)
-- [Java](sdk/java/README.md)
+
+- [java](sdk/java/README.md)
 
 ## License
 
-### API Specifications License
+### API Specification License
 
 API specifications are included for development and code generation purposes only.
 

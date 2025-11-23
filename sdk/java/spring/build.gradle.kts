@@ -6,7 +6,7 @@ plugins {
 }
 
 projectConfiguration {
-    artifactId.set("osv-client-spring-boot-starter")
+    artifactId.set("osv4j-spring-boot-starter")
 }
 
 dependencies {

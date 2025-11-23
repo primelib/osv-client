@@ -7,7 +7,7 @@ pluginManagement {
     }
 }
 
-rootProject.name = "osv-client"
+rootProject.name = "osv4j"
 
 include(
     "core",

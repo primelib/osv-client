@@ -7,7 +7,7 @@ A java http client library for OSV Client.
 **Coordinates**
 
 ```
-implementation("io.github.primelib:osv-client:<version>")
+implementation("io.github.primelib:osv4j:<version>")
 ```
 
 **Create client instances using the factory, you can choose different interfaces by changing the `api` parameter.**
@@ -15,7 +15,7 @@ implementation("io.github.primelib:osv-client:<version>")
 ```java
 OsvClientApi client = OsvClientFactory.create(spec -> {
     spec.api(OsvClientApi.class);
-    spec.baseUrl("//api.osv.dev");
+    spec.baseUrl("https://api.osv.dev");
     //spec.meterRegistry(meterRegistry);
     //spec.logLevel("FULL");
 });
@@ -26,7 +26,7 @@ OsvClientApi client = OsvClientFactory.create(spec -> {
 **Coordinates**
 
 ```
-implementation("io.github.primelib:osv-client-spring-boot-starter:<version>")
+implementation("io.github.primelib:osv4j-spring-boot-starter:<version>")
 ```
 
 **Auto Configuration**
