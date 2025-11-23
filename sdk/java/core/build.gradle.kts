@@ -6,7 +6,7 @@ plugins {
 }
 
 projectConfiguration {
-    artifactId.set("osv-client")
+    artifactId.set("osv4j")
 }
 
 dependencies {

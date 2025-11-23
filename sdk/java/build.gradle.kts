@@ -12,7 +12,7 @@ subprojects {
         javaVersion.set(JavaVersion.VERSION_17)
         artifactGroupId.set("io.github.primelib")
         artifactDisplayName.set("OSV Client")
-        artifactDescription.set("Unofficial API client generated from the osv.dev API specification.")
+        artifactDescription.set("Unofficial Client Libraries for the osv.dev API.")
         javadocLint.set(listOf("none"))
 
         pom = { pom ->
