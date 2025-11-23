@@ -14,6 +14,16 @@ maintainers:
     name: Philipp Heuer
     email: git@philippheuer.de
 
+provider:
+  productDescription: |-
+    OSV is a distributed vulnerability database for Open Source.
+  organizations: ["Google"]
+  documentation:
+    - name: github.com/google/osv.dev
+      url: https://github.com/google/osv.dev
+    - name: OSV Documentation
+      url: https://osv.dev/docs
+
 spec:
   file: openapi.yaml
   type: openapi3
@@ -28,5 +38,8 @@ spec:
         url: https://api.osv.dev
 
 presets:
+  scaffolding:
+    enabled: true
   java:
     enabled: true
+    artifactId: osv4j
