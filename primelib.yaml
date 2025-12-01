@@ -31,7 +31,7 @@ spec:
     - url: https://osv.dev/docs/osv_service_v1.swagger.json
       type: swagger2
   patchSets:
-    - code-generation
+    - id: code-generation
   patches:
     - id: set-endpoint
       config:
